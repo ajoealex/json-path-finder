@@ -1,5 +1,7 @@
 # JSON Path Finder
 
+**Live App: [https://ajoealex.github.io/json-path-finder/](https://ajoealex.github.io/json-path-finder/)**
+
 A React-based JSON viewer and path finder tool with a DevTools-style interface. Paste or type JSON on the left, explore it as an interactive tree on the right, and easily copy JSONPath expressions for any node.
 
 ## Features
