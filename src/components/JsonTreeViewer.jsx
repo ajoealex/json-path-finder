@@ -183,7 +183,7 @@ const JsonNode = memo(function JsonNode({
 // Default settings (used if no settings prop provided)
 const defaultSettings = {
   defaultExpandDepth: 1, // Only expand root node by default
-  largeThreshold: 1000, // Show warning above this node count
+  largeThreshold: 2000, // Show warning above this node count
 }
 
 function JsonTreeViewer({
@@ -228,13 +228,13 @@ function JsonTreeViewer({
 
   if (data === undefined || data === null) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 p-8">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+      <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2 md:gap-3 p-4 md:p-8">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <p className="text-center">
+        <p className="text-center text-sm md:text-base">
           Enter or paste valid JSON<br />
-          <span className="text-sm text-slate-300">to view the tree structure</span>
+          <span className="text-xs md:text-sm text-slate-300">to view the tree structure</span>
         </p>
       </div>
     )
@@ -244,13 +244,14 @@ function JsonTreeViewer({
   const entries = typeof data === 'object' ? Object.entries(data) : []
 
   return (
-    <div className="h-full overflow-auto bg-white font-mono text-sm py-2">
+    <div className="h-full overflow-auto bg-white font-mono text-xs md:text-sm py-1 md:py-2">
       {isLargeData && (
-        <div className="mx-2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md text-amber-700 text-xs flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="mx-1.5 md:mx-2 mb-1.5 md:mb-2 px-2 md:px-3 py-1.5 md:py-2 bg-amber-50 border border-amber-200 rounded-md text-amber-700 text-xs flex items-center gap-1.5 md:gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Large JSON detected. Nodes collapsed by default for performance.
+          <span className="hidden sm:inline">Large JSON detected. Nodes collapsed by default for performance.</span>
+          <span className="sm:hidden">Large JSON - collapsed for performance</span>
         </div>
       )}
       {typeof data === 'object' ? (
