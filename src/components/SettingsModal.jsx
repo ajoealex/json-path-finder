@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 
 const defaultSettings = {
-  defaultExpandDepth: 1, // Only expand root node by default
-  largeThreshold: 2000,
+  defaultExpandDepth: 1,    // Only expand root node by default
+  maxArrayItems: 50,        // Max array items to show before "Show more"
+  maxObjectProperties: 1000, // Max object properties to show before "Show more"
 }
 
 function SettingsModal({ isOpen, onClose, settings, onSettingsChange }) {
@@ -39,7 +40,8 @@ function SettingsModal({ isOpen, onClose, settings, onSettingsChange }) {
 
   const handleChange = (key, value) => {
     const numValue = parseInt(value, 10)
-    if (!isNaN(numValue) && numValue >= 0) {
+    const minValue = key === 'defaultExpandDepth' ? 0 : 10
+    if (!isNaN(numValue) && numValue >= minValue) {
       setLocalSettings(prev => ({ ...prev, [key]: numValue }))
     }
   }
@@ -82,48 +84,63 @@ function SettingsModal({ isOpen, onClose, settings, onSettingsChange }) {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Default Expansion Depth
             </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min="0"
-                max="10"
-                value={localSettings.defaultExpandDepth}
-                onChange={(e) => handleChange('defaultExpandDepth', e.target.value)}
-                className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
-              />
+            <div className="flex items-center gap-2">
               <input
                 type="number"
                 min="0"
                 max="50"
                 value={localSettings.defaultExpandDepth}
                 onChange={(e) => handleChange('defaultExpandDepth', e.target.value)}
-                className="w-16 px-2 py-1 border border-slate-300 rounded text-sm text-center"
+                className="w-20 px-2 py-1 border border-slate-300 rounded text-sm text-center"
               />
+              <span className="text-sm text-slate-500">levels</span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              How many levels to expand by default (0 = collapsed, higher = more expanded)
+              How many levels to expand by default (0 = collapsed)
             </p>
           </div>
 
-          {/* Large JSON Warning Threshold */}
+          {/* Max Array Items */}
           <div className="border-t border-slate-200 pt-4">
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Large JSON Warning Threshold
+              Max Array Items
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                min="100"
-                max="50000"
-                step="100"
-                value={localSettings.largeThreshold}
-                onChange={(e) => handleChange('largeThreshold', e.target.value)}
-                className="w-24 px-2 py-1 border border-slate-300 rounded text-sm text-center"
+                min="10"
+                max="1000"
+                step="10"
+                value={localSettings.maxArrayItems}
+                onChange={(e) => handleChange('maxArrayItems', e.target.value)}
+                className="w-20 px-2 py-1 border border-slate-300 rounded text-sm text-center"
               />
-              <span className="text-sm text-slate-600">nodes</span>
+              <span className="text-sm text-slate-500">items</span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Show a warning banner when JSON exceeds this node count
+              Number of array items to display before "Show more"
+            </p>
+          </div>
+
+          {/* Max Object Properties */}
+          <div className="border-t border-slate-200 pt-4">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Max Object Properties
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min="10"
+                max="5000"
+                step="10"
+                value={localSettings.maxObjectProperties}
+                onChange={(e) => handleChange('maxObjectProperties', e.target.value)}
+                className="w-20 px-2 py-1 border border-slate-300 rounded text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">properties</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Number of object properties to display before "Show more"
             </p>
           </div>
         </div>

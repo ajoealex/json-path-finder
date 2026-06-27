@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 
-function JsonEditor({ value, onChange, onBeautify, onMinify, onSample }) {
+function JsonEditor({ value, onChange, onBeautify, onMinify, onSample, onClear }) {
   const textareaRef = useRef(null)
   const lineNumbersRef = useRef(null)
 
@@ -42,25 +42,33 @@ function JsonEditor({ value, onChange, onBeautify, onMinify, onSample }) {
   return (
     <div className="flex flex-col h-full bg-slate-50">
       {/* Toolbar */}
-      <div className="flex justify-end gap-1.5 md:gap-2 p-2 md:p-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200 shrink-0">
+      <div className="flex justify-between gap-1.5 md:gap-2 p-2 md:p-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200 shrink-0">
         <button
-          onClick={onSample}
-          className="px-2 md:px-4 py-1 md:py-1.5 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+          onClick={onClear}
+          className="px-2 md:px-4 py-1 md:py-1.5 bg-slate-500 text-white rounded-md hover:bg-slate-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
         >
-          Sample
+          Clear
         </button>
-        <button
-          onClick={onBeautify}
-          className="px-2 md:px-4 py-1 md:py-1.5 bg-sky-500 text-white rounded-md hover:bg-sky-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
-        >
-          Beautify
-        </button>
-        <button
-          onClick={onMinify}
-          className="px-2 md:px-4 py-1 md:py-1.5 bg-amber-500 text-white rounded-md hover:bg-amber-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
-        >
-          Minify
-        </button>
+        <div className="flex gap-1.5 md:gap-2">
+          <button
+            onClick={onSample}
+            className="px-2 md:px-4 py-1 md:py-1.5 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+          >
+            Sample
+          </button>
+          <button
+            onClick={onBeautify}
+            className="px-2 md:px-4 py-1 md:py-1.5 bg-sky-500 text-white rounded-md hover:bg-sky-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+          >
+            Beautify
+          </button>
+          <button
+            onClick={onMinify}
+            className="px-2 md:px-4 py-1 md:py-1.5 bg-amber-500 text-white rounded-md hover:bg-amber-600 font-medium text-xs md:text-sm shadow-sm transition-all duration-200 hover:shadow-md active:scale-95"
+          >
+            Minify
+          </button>
+        </div>
       </div>
 
       {/* Editor area */}
