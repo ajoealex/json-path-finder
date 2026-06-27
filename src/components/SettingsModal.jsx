@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 
 const defaultSettings = {
   defaultExpandDepth: 1, // Only expand root node by default
-  largeThreshold: 1000,
+  largeThreshold: 2000,
 }
 
 function SettingsModal({ isOpen, onClose, settings, onSettingsChange }) {
@@ -57,10 +57,10 @@ function SettingsModal({ isOpen, onClose, settings, onSettingsChange }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-start justify-center pt-20 z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 overflow-hidden"
+        className="bg-white rounded-lg shadow-xl w-full max-w-sm overflow-hidden"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">

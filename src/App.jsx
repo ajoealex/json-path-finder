@@ -187,16 +187,16 @@ function App() {
   }, [])
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
       {/* Header */}
-      <header className="bg-slate-800/80 backdrop-blur-sm text-sky-400 py-4 px-6 font-bold text-xl border-b border-slate-700 shadow-lg flex items-center gap-3">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <header className="bg-slate-800/80 backdrop-blur-sm text-sky-400 py-2 px-4 md:py-4 md:px-6 font-bold text-lg md:text-xl border-b border-slate-700 shadow-lg flex items-center gap-2 md:gap-3 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
         </svg>
-        <span className="flex-1">JSON Path Finder</span>
+        <span className="flex-1 truncate">JSON Path Finder</span>
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-400 hover:text-sky-400"
+          className="p-1.5 md:p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-400 hover:text-sky-400"
           title="Settings"
         >
           <SettingsIcon />
@@ -204,9 +204,9 @@ function App() {
       </header>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         {/* Left panel - Editor */}
-        <div ref={editorRef} className="w-full md:w-1/2 flex flex-col min-h-[40vh] md:min-h-0">
+        <div ref={editorRef} className="h-[45vh] md:h-auto w-full md:w-1/2 flex flex-col shrink-0 md:shrink">
           <JsonEditor
             value={jsonText}
             onChange={handleJsonChange}
@@ -215,7 +215,7 @@ function App() {
             onSample={handleSample}
           />
           {parseError && (
-            <div className="bg-red-50 text-red-600 px-4 py-2.5 text-sm border-t border-red-200 flex items-center gap-2">
+            <div className="bg-red-50 text-red-600 px-3 md:px-4 py-2 text-xs md:text-sm border-t border-red-200 flex items-center gap-2 shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -225,21 +225,21 @@ function App() {
         </div>
 
         {/* Right panel - Tree viewer */}
-        <div className="w-full md:w-1/2 flex flex-col bg-white border-t md:border-t-0 md:border-l border-slate-300 shadow-inner">
+        <div className="flex-1 md:h-auto w-full md:w-1/2 flex flex-col bg-white border-t md:border-t-0 md:border-l border-slate-300 shadow-inner min-h-0">
           {/* Path display */}
-          <div className="flex flex-wrap items-center gap-2 p-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200">
-            <span className="text-slate-500 font-medium text-sm uppercase tracking-wide">Path:</span>
+          <div className="flex flex-wrap items-center gap-1.5 md:gap-2 p-2 md:p-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200 shrink-0">
+            <span className="text-slate-500 font-medium text-xs md:text-sm uppercase tracking-wide hidden sm:inline">Path:</span>
             <input
               type="text"
               readOnly
               value={selectedPath}
-              className="flex-1 min-w-[120px] px-3 py-1.5 bg-white border border-slate-300 rounded-md text-sm font-mono shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+              className="flex-1 min-w-[80px] md:min-w-[120px] px-2 md:px-3 py-1 md:py-1.5 bg-white border border-slate-300 rounded-md text-xs md:text-sm font-mono shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               placeholder="Select a node..."
             />
             <select
               value={notation}
               onChange={(e) => handleNotationChange(e.target.value)}
-              className="px-3 py-1.5 bg-white border border-slate-300 rounded-md text-sm cursor-pointer shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
+              className="px-2 md:px-3 py-1 md:py-1.5 bg-white border border-slate-300 rounded-md text-xs md:text-sm cursor-pointer shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-colors"
             >
               <option value="bracket">['key']</option>
               <option value="dot">.key</option>
@@ -249,7 +249,7 @@ function App() {
             {parsedJson && !isLargeData && (
               <button
                 onClick={handleExpandAll}
-                className="p-1.5 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 text-slate-600 hover:text-sky-600 transition-colors"
+                className="p-1 md:p-1.5 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 text-slate-600 hover:text-sky-600 transition-colors"
                 title="Expand All"
               >
                 <ExpandAllIcon />
@@ -258,7 +258,7 @@ function App() {
             {parsedJson && (
               <button
                 onClick={handleCollapseAll}
-                className="p-1.5 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 text-slate-600 hover:text-sky-600 transition-colors"
+                className="p-1 md:p-1.5 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 text-slate-600 hover:text-sky-600 transition-colors"
                 title="Collapse All"
               >
                 <CollapseAllIcon />
@@ -269,7 +269,7 @@ function App() {
               onClick={handleCopyPath}
               disabled={!selectedPath}
               className={`
-                inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium shadow-sm
+                inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-md text-xs md:text-sm font-medium shadow-sm
                 transition-all duration-200 ease-in-out
                 ${copied
                   ? 'bg-green-500 text-white'
