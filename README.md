@@ -12,10 +12,11 @@ A React-based JSON viewer and path finder tool with a DevTools-style interface. 
 - **JSONPath generation**: Click any node to get its path
 - **Path notation options**: Switch between bracket (`$['key']`) and dot (`$.key`) notation
 - **Beautify & Minify**: Format or compress JSON with one click
+- **Clear**: Reset the editor and tree view
 - **Sample data**: Load example JSON to try out the tool
 - **Expand/Collapse all**: Quick buttons to expand or collapse the entire tree
-- **Large JSON handling**: Performance optimizations for large files with configurable thresholds
-- **Configurable settings**: Adjust default expansion depth and warning thresholds
+- **Large data handling**: "Show more" pagination for large arrays and objects with configurable limits
+- **Configurable settings**: Adjust expansion depth and display limits for arrays/objects
 - **Responsive design**: Works on desktop and mobile
 - **Copy to clipboard**: One-click copy of selected paths
 
@@ -60,7 +61,8 @@ Production builds are output to the `docs/` folder with relative asset paths, ma
 Click the gear icon in the top-right corner to configure:
 
 - **Default Expansion Depth**: How many levels to auto-expand (0 = all collapsed, higher = more expanded)
-- **Large JSON Warning Threshold**: Node count that triggers the "large JSON" warning banner
+- **Max Array Items**: Number of array items to display before showing "Show more" link (default: 50)
+- **Max Object Properties**: Number of object properties to display before showing "Show more" link (default: 1000)
 
 Settings are persisted in localStorage.
 

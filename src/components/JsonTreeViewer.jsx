@@ -1,4 +1,4 @@
-import { useState, memo, useMemo, useEffect } from 'react'
+import { useState, memo, useMemo } from 'react'
 
 // Path building utilities
 const buildPath = (parentPath, key, isArrayIndex, notation) => {
@@ -19,17 +19,6 @@ const buildPath = (parentPath, key, isArrayIndex, notation) => {
   }
 }
 
-// Count total nodes in a JSON structure
-const countNodes = (value, maxCount = 5000) => {
-  if (value === null || typeof value !== 'object') return 1
-  let count = 1
-  for (const key in value) {
-    if (count > maxCount) return count
-    count += countNodes(value[key], maxCount - count)
-  }
-  return count
-}
-
 const JsonNode = memo(function JsonNode({
   keyName,
   value,
@@ -39,12 +28,15 @@ const JsonNode = memo(function JsonNode({
   selectedPath,
   notation,
   parentIsArray,
-  maxExpandDepth
+  maxExpandDepth,
+  maxArrayItems,
+  maxObjectProperties
 }) {
   // Expand if depth is within the allowed range
   const shouldExpandInitially = depth < maxExpandDepth
   const [isExpanded, setIsExpanded] = useState(shouldExpandInitially)
   const [hasRenderedChildren, setHasRenderedChildren] = useState(shouldExpandInitially)
+  const [visibleCount, setVisibleCount] = useState(null) // null = use default limit
 
   const isObject = value !== null && typeof value === 'object'
   const isArray = Array.isArray(value)
@@ -155,25 +147,57 @@ const JsonNode = memo(function JsonNode({
             display: isExpanded ? 'block' : 'none'
           }}
         >
-          {childEntries.map(([key, val]) => {
-            const isArrayIndex = isArray
-            const childPath = buildPath(path, key, isArrayIndex, notation)
+          {(() => {
+            const limit = isArray ? maxArrayItems : maxObjectProperties
+            const currentLimit = visibleCount !== null ? visibleCount : limit
+            const totalCount = childEntries.length
+            const visibleEntries = childEntries.slice(0, currentLimit)
+            const hasMore = totalCount > currentLimit
+            const remainingCount = totalCount - currentLimit
 
             return (
-              <JsonNode
-                key={key}
-                keyName={key}
-                value={val}
-                path={childPath}
-                depth={depth + 1}
-                onSelect={onSelect}
-                selectedPath={selectedPath}
-                notation={notation}
-                parentIsArray={isArray}
-                maxExpandDepth={maxExpandDepth}
-              />
+              <>
+                {visibleEntries.map(([key, val]) => {
+                  const isArrayIndex = isArray
+                  const childPath = buildPath(path, key, isArrayIndex, notation)
+
+                  return (
+                    <JsonNode
+                      key={key}
+                      keyName={key}
+                      value={val}
+                      path={childPath}
+                      depth={depth + 1}
+                      onSelect={onSelect}
+                      selectedPath={selectedPath}
+                      notation={notation}
+                      parentIsArray={isArray}
+                      maxExpandDepth={maxExpandDepth}
+                      maxArrayItems={maxArrayItems}
+                      maxObjectProperties={maxObjectProperties}
+                    />
+                  )
+                })}
+                {hasMore && (
+                  <div
+                    className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-slate-50 transition-colors"
+                    style={{ paddingLeft: `${(depth + 1) * 16 + 24}px` }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setVisibleCount(currentLimit + limit)
+                    }}
+                  >
+                    <span className="text-sky-500 hover:text-sky-600 text-xs font-medium flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                      Show more ({remainingCount} remaining)
+                    </span>
+                  </div>
+                )}
+              </>
             )
-          })}
+          })()}
         </div>
       )}
     </div>
@@ -182,8 +206,9 @@ const JsonNode = memo(function JsonNode({
 
 // Default settings (used if no settings prop provided)
 const defaultSettings = {
-  defaultExpandDepth: 1, // Only expand root node by default
-  largeThreshold: 2000, // Show warning above this node count
+  defaultExpandDepth: 1,    // Only expand root node by default
+  maxArrayItems: 50,        // Max array items before "Show more"
+  maxObjectProperties: 1000, // Max object properties before "Show more"
 }
 
 function JsonTreeViewer({
@@ -192,39 +217,14 @@ function JsonTreeViewer({
   onSelect,
   notation = 'bracket',
   expandAll = null,
-  onLargeDataChange,
   settings = defaultSettings
 }) {
-  // Determine data size and appropriate expansion depth based on settings
-  const { isLargeData, maxExpandDepth } = useMemo(() => {
-    if (data === null || data === undefined) {
-      return { isLargeData: false, maxExpandDepth: settings.defaultExpandDepth }
-    }
-
-    const nodeCount = countNodes(data, 10000)
-
-    // Use the configured default expansion depth
-    // Show warning for large JSON but still respect user's depth setting
-    const isLarge = nodeCount > settings.largeThreshold
-    return {
-      isLargeData: isLarge,
-      maxExpandDepth: settings.defaultExpandDepth
-    }
-  }, [data, settings])
-
-  // Notify parent about large data status
-  useEffect(() => {
-    if (onLargeDataChange) {
-      onLargeDataChange(isLargeData)
-    }
-  }, [isLargeData, onLargeDataChange])
-
   // Override depth based on expandAll prop
   const effectiveMaxDepth = useMemo(() => {
     if (expandAll === true) return 100 // Expand everything
     if (expandAll === false) return 0  // Collapse everything
-    return maxExpandDepth
-  }, [expandAll, maxExpandDepth])
+    return settings.defaultExpandDepth
+  }, [expandAll, settings.defaultExpandDepth])
 
   if (data === undefined || data === null) {
     return (
@@ -245,15 +245,6 @@ function JsonTreeViewer({
 
   return (
     <div className="h-full overflow-auto bg-white font-mono text-xs md:text-sm py-1 md:py-2">
-      {isLargeData && (
-        <div className="mx-1.5 md:mx-2 mb-1.5 md:mb-2 px-2 md:px-3 py-1.5 md:py-2 bg-amber-50 border border-amber-200 rounded-md text-amber-700 text-xs flex items-center gap-1.5 md:gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-4 md:w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="hidden sm:inline">Large JSON detected. Nodes collapsed by default for performance.</span>
-          <span className="sm:hidden">Large JSON - collapsed for performance</span>
-        </div>
-      )}
       {typeof data === 'object' ? (
         entries.map(([key, val]) => {
           const isArrayIndex = isArray
@@ -271,6 +262,8 @@ function JsonTreeViewer({
               notation={notation}
               parentIsArray={isArray}
               maxExpandDepth={effectiveMaxDepth}
+              maxArrayItems={settings.maxArrayItems}
+              maxObjectProperties={settings.maxObjectProperties}
             />
           )
         })
@@ -286,6 +279,8 @@ function JsonTreeViewer({
             notation={notation}
             parentIsArray={false}
             maxExpandDepth={effectiveMaxDepth}
+            maxArrayItems={settings.maxArrayItems}
+            maxObjectProperties={settings.maxObjectProperties}
           />
         </div>
       )}

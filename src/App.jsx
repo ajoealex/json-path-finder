@@ -72,7 +72,6 @@ function App() {
   const [isParsing, setIsParsing] = useState(false)
   const [expandCollapseKey, setExpandCollapseKey] = useState(0)
   const [expandAll, setExpandAll] = useState(null) // null = default, true = expand all, false = collapse all
-  const [isLargeData, setIsLargeData] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [settings, setSettings] = useState(() => {
     // Load settings from localStorage if available
@@ -182,8 +181,12 @@ function App() {
     setExpandCollapseKey(k => k + 1)
   }, [])
 
-  const handleLargeDataChange = useCallback((isLarge) => {
-    setIsLargeData(isLarge)
+  const handleClear = useCallback(() => {
+    setJsonText('')
+    setParsedJson(null)
+    setParseError(null)
+    setSelectedPath('')
+    setSelectedValue(null)
   }, [])
 
   return (
@@ -213,6 +216,7 @@ function App() {
             onBeautify={handleBeautify}
             onMinify={handleMinify}
             onSample={handleSample}
+            onClear={handleClear}
           />
           {parseError && (
             <div className="bg-red-50 text-red-600 px-3 md:px-4 py-2 text-xs md:text-sm border-t border-red-200 flex items-center gap-2 shrink-0">
@@ -246,7 +250,7 @@ function App() {
             </select>
 
             {/* Expand/Collapse buttons */}
-            {parsedJson && !isLargeData && (
+            {parsedJson && (
               <button
                 onClick={handleExpandAll}
                 className="p-1 md:p-1.5 bg-white border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 text-slate-600 hover:text-sky-600 transition-colors"
@@ -311,7 +315,6 @@ function App() {
               onSelect={handleSelect}
               notation={notation}
               expandAll={expandAll}
-              onLargeDataChange={handleLargeDataChange}
               settings={settings}
             />
           </div>
