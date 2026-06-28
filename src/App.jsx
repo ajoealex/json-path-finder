@@ -189,6 +189,12 @@ function App() {
     setSelectedValue(null)
   }, [])
 
+  const handleCopyJson = useCallback(() => {
+    if (jsonText) {
+      navigator.clipboard.writeText(jsonText)
+    }
+  }, [jsonText])
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
       {/* Header */}
@@ -217,6 +223,7 @@ function App() {
             onMinify={handleMinify}
             onSample={handleSample}
             onClear={handleClear}
+            onCopy={handleCopyJson}
           />
           {parseError && (
             <div className="bg-red-50 text-red-600 px-3 md:px-4 py-2 text-xs md:text-sm border-t border-red-200 flex items-center gap-2 shrink-0">
